@@ -1405,6 +1405,16 @@ impl FileDescriptor {
                 }
             }
         }
+        for mut e in &mut desc.enums {
+            if e.path.as_os_str().is_empty() {
+                e.path = in_file.clone().to_path_buf();
+                if &import_search_path.len() > &0 {
+                    if let Ok(p) = e.path.clone().strip_prefix(&import_search_path[0]) {
+                        e.import = p.to_path_buf();
+                    }
+                }
+            }
+        }
         // proto files with no packages are given an implicit module,
         // since every generated Rust source file represents a module
         desc.module = if desc.package.is_empty() {
